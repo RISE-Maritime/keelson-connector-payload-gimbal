@@ -18,7 +18,7 @@ motion DOF.
 >   Slipway driver implements the same seam (`payload_gate/driver/sim_gimbal.py`, `Driver`).
 > - It writes no `motion_constraint`: a gimbal limits nothing about the hull. A towed sonar or a
 >   crane would.
-> - It publishes no gimbal telemetry: keelson has no gimbal subjects yet.
+> - It publishes no gimbal telemetry: keelson has no gimbal subjects yet (keelson #372).
 > - Never run this against a real vessel or a shared network.
 
 ## What it does
