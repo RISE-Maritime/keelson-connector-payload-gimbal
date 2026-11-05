@@ -1,0 +1,17 @@
+# A camera gimbal's connector and payload gate: ONE per payload, its own process and session, beside
+# the motion gate and never through it. The store on a persistent volume; the platform config carries
+# payloads[] (the safe-state policy among it), which changes only in maintenance.
+services:
+  payload-gimbal:
+    image: ghcr.io/rise-maritime/keelson-connector-payload-gimbal:latest
+    container_name: payload-gimbal
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - gimbal-state:/state
+      - ./config/platform.json:/config/platform.json:ro
+      - ./config/gate.json:/config/gate.json:ro
+    command: "payload-gimbal2keelson --log-level 20 -r rise -e <vessel_id> --payload-id gimbal --platform /config/platform.json --gate-config /config/gate.json --state-dir /state --driver sim"
+
+volumes:
+  gimbal-state:

@@ -1,0 +1,8 @@
+{
+  "max_axis_age_ms": 1000,
+  "safety_ttl_ms": 15000,
+  "require_safety_state": true,
+  "motion_fence_ttl_ms": 2000,
+  "ship_ttl_ms": 5000,
+  "ship": {}
+}

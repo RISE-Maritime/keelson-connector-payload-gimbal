@@ -1,0 +1,13 @@
+{
+  "payloads": [
+    {
+      "id": "gimbal",
+      "kind": "camera_gimbal",
+      "description": "Pan/tilt camera gimbal (simulated)",
+      "axes": [{ "id": "pan" }, { "id": "tilt" }],
+      "affects_stability": false,
+      "affects_navigation": false,
+      "payload_safe_state_policy": "HOLD_POSITION"
+    }
+  ]
+}
