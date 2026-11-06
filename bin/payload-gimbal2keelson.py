@@ -39,6 +39,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
 from payload_gate import codec
 from payload_gate.driver.sim_gimbal import SimGimbal
+from payload_gate.driver.slipway_gimbal import SlipwayGimbal
 from payload_gate.policy import load
 from payload_gate.service import PayloadGate
 from payload_gate.store import Store
@@ -56,7 +57,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--platform", type=pathlib.Path, required=True, help="The vessel's platform config (JSON), with payloads[]")
     p.add_argument("--gate-config", type=pathlib.Path, default=None, help="Timings and the ship's input keys (JSON)")
     p.add_argument("--state-dir", type=pathlib.Path, required=True, help="Directory of the gate's store (a persistent volume)")
-    p.add_argument("--driver", choices=["sim"], default="sim", help="What the gate drives (only the simulated gimbal so far)")
+    p.add_argument("--driver", choices=["sim", "slipway"], default="sim",
+                   help="What the gate drives: the in-process simulated gimbal, or Slipway's modelled one (crowsnest-dev#300)")
     p.add_argument("--rate-hz", type=float, default=10.0, help="Cycle rate (default 10 Hz)")
     return p
 
@@ -98,7 +100,15 @@ def main() -> int:
             with wanted_lock:
                 wanted["axes"] = tuple(axes)
 
-        gate = PayloadGate(store=Store(args.state_dir / "payload-gate.sqlite"), policy=policy, driver=SimGimbal(pid),
+        if args.driver == "slipway":
+            # Slipway's gimbal: a raw drive record out, her truth record in (driver/slipway_gimbal.py).
+            from keelson.payloads.Primitives_pb2 import TimestampedString
+
+            drive_key = f"{base}/raw_json/gimbal_drive/{pid}"
+            driver = SlipwayGimbal(pid, lambda text: session.put(drive_key, keelson.enclose(TimestampedString(value=text).SerializeToString())))
+        else:
+            driver = SimGimbal(pid)
+        gate = PayloadGate(store=Store(args.state_dir / "payload-gate.sqlite"), policy=policy, driver=driver,
                            on_mapping_change=on_mapping_change)
         gate.boot()
 
@@ -137,6 +147,13 @@ def main() -> int:
             session.declare_subscriber(f"{base}/resolved_control/{vessel}", guarded(on_resolved)),
             session.declare_subscriber(f"{base}/safety_state/{vessel}", guarded(on_safety)),
         ]
+        if args.driver == "slipway":
+            def on_truth(sample):
+                from keelson.payloads.Primitives_pb2 import TimestampedString
+
+                driver.on_truth(json.loads(_decode(sample, TimestampedString).value))
+
+            subs.append(session.declare_subscriber(f"{base}/raw_json/truth", guarded(on_truth)))
         for what, key in (gate_conf.get("ship") or {}).items():
             if what not in SHIP_TYPES:
                 raise SystemExit(f"gate config: unknown ship input {what!r} (speed, heel or mode)")

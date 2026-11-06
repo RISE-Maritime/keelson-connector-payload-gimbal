@@ -52,12 +52,12 @@ class Harness:
     def put(self, path, msg):
         self.session.put(f"{BASE}/{path}", keelson.enclose(msg.SerializeToString()))
 
-    def start(self):
+    def start(self, *extra):
         platform = self.tmp / "platform.json"
         platform.write_text(json.dumps({"payloads": [{"id": PID, "kind": "camera_gimbal", "axes": [{"id": "pan"}, {"id": "tilt"}],
                                                       "payload_safe_state_policy": "HOLD_POSITION"}]}))
         self.proc = subprocess.Popen([sys.executable, str(ROOT / "bin/payload-gimbal2keelson.py"), "-r", REALM, "-e", V, "--payload-id", PID,
-                                      "--platform", str(platform), "--state-dir", str(self.tmp / "state"), "--zenoh-config", str(self.zcfg)],
+                                      "--platform", str(platform), "--state-dir", str(self.tmp / "state"), "--zenoh-config", str(self.zcfg), *extra],
                                      stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         token = keelson.construct_source_liveliness_key(REALM, V, SOURCE)
         self.wait(lambda: any(True for _ in self.session.liveliness().get(token, timeout=0.5)), what="the gate's liveliness")

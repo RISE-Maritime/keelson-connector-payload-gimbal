@@ -14,8 +14,11 @@ motion DOF.
   experimental.21 carries it.
 
 > **Status: it gates a SIMULATED gimbal, and drives no hardware.**
-> - The driver is in-process (`--driver sim`). Slipway models no gimbal yet; when it does, a
->   Slipway driver implements the same seam (`payload_gate/driver/sim_gimbal.py`, `Driver`).
+> - Two drivers on the same seam (`Driver`): the in-process simulated gimbal (`--driver sim`),
+>   and **Slipway's modelled one** (`--driver slipway`, crowsnest-dev#300, Slipway ADR-0147).
+>   The Slipway driver publishes a raw, simulator-only drive record on
+>   `raw_json/gimbal_drive/{payload_id}` and reads the actual angles back from her truth record.
+>   `tests/test_slipway_e2e.py` runs the kernel from `../SLIPWAY` beside the gate, on loopback.
 > - It writes no `motion_constraint`: a gimbal limits nothing about the hull. A towed sonar or a
 >   crane would.
 > - It publishes no gimbal telemetry: keelson has no gimbal subjects yet (keelson #372).
