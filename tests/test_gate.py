@@ -14,7 +14,7 @@ from payload_gate.policy import parse
 from payload_gate.service import PayloadGate
 from payload_gate.store import Store
 
-V = "slipway-usv-alpha"
+V = "sim-usv-alpha"
 GIMBAL = {"payloads": [{"id": "gimbal", "kind": "camera_gimbal", "axes": [{"id": "pan"}, {"id": "tilt"}],
                         "payload_safe_state_policy": "HOLD_POSITION"}]}
 CRANE = {"payloads": [{"id": "crane-1", "kind": "crane", "axes": [{"id": "slew"}, {"id": "hoist", "unipolar": True}],

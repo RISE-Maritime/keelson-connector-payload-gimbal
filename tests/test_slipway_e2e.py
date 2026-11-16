@@ -67,7 +67,7 @@ class Kernel:
 
     def set_lockout(self, engaged: bool) -> None:
         ops = {"ops": [{"op": "stage_event", "event": {"action": "set_lockout", "entity_id": V, "engaged": engaged}}]}
-        key = keelson.construct_rpc_key(REALM, "slipway", "scenario_edit", "v1", "commit", "sim")
+        key = keelson.construct_rpc_key(REALM, "sim-slipway", "scenario_edit", "v1", "commit", "slipway")
         for reply in self.h.session.get(key, payload=json.dumps(ops).encode(), timeout=5):
             assert reply.ok is not None, reply.err.payload.to_bytes()
             return
