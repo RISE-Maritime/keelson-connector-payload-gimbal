@@ -30,3 +30,19 @@ def test_the_angles_are_what_her_truth_record_says():
     assert d.read() == {"mode": "DRIVEN", "pan_deg": 12.5, "tilt_deg": -3.0}
     d.on_truth({"entity_id": "usv"})  # a record without gimbals changes nothing
     assert d.read()["pan_deg"] == 12.5
+
+
+def test_her_ptz_config_drives_pan_tilt_and_zoom_with_no_clearance():
+    """config/sim-ted-bulk-alfa.platform.json (Slipway ADR-0159): her `ptz` gimbal, whose third axis is a zoom.
+    The driver needs no change for it: every mapped axis of this payload goes into the drive record."""
+    import pathlib
+
+    from payload_gate.policy import load
+
+    pol = load(pathlib.Path(__file__).resolve().parent.parent / "config" / "sim-ted-bulk-alfa.platform.json", "ptz", "sim-ted-bulk-alfa")
+    assert pol.axis_keys == ("pan/ptz", "tilt/ptz", "zoom/ptz")
+    assert (pol.kind, pol.safe_state, pol.needs_clearance) == ("camera_gimbal", "HOLD_POSITION", False)
+    sent = []
+    d = SlipwayGimbal("ptz", lambda text: sent.append(json.loads(text)))
+    d.apply({"pan/ptz": 50, "tilt/ptz": 20, "zoom/ptz": 100}, 0.1)
+    assert sent == [{"mode": "DRIVEN", "axes": {"pan": 50.0, "tilt": 20.0, "zoom": 100.0}}]

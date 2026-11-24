@@ -1,0 +1,13 @@
+{
+  "payloads": [
+    {
+      "id": "ptz",
+      "kind": "camera_gimbal",
+      "description": "PTZ camera gimbal beside the bridge (Slipway, simulated)",
+      "axes": [{ "id": "pan" }, { "id": "tilt" }, { "id": "zoom" }],
+      "affects_stability": false,
+      "affects_navigation": false,
+      "payload_safe_state_policy": "HOLD_POSITION"
+    }
+  ]
+}

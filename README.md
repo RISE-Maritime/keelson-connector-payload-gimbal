@@ -62,6 +62,17 @@ uv venv .venv && uv pip install -p .venv/bin/python -e ".[dev]"
     --platform config/platform.example.json --gate-config config/gate.example.json --state-dir state/
 ```
 
+For Slipway's 60 m general cargo ship `sim-ted-bulk-alfa` and her PTZ gimbal (pan, tilt and zoom,
+Slipway ADR-0159), the platform file is `config/sim-ted-bulk-alfa.platform.json`:
+
+```bash
+.venv/bin/python bin/payload-gimbal2keelson.py -r rise -e sim-ted-bulk-alfa -s payload-ptz --payload-id ptz \
+    --driver slipway --platform config/sim-ted-bulk-alfa.platform.json --gate-config config/gate.example.json --state-dir state/
+```
+
+Its `payloads[]` entry must match her platform config's exactly. Crowsnest reads the axes and the safe
+state from that one.
+
 `--gate-config` carries the timings and, for a payload that needs a clearance, the keys of the
 ship's speed, heel and mode (`"ship": {"speed": "<key expression>", …}`).
 
