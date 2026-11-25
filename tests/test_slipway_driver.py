@@ -46,3 +46,16 @@ def test_her_ptz_config_drives_pan_tilt_and_zoom_with_no_clearance():
     d = SlipwayGimbal("ptz", lambda text: sent.append(json.loads(text)))
     d.apply({"pan/ptz": 50, "tilt/ptz": 20, "zoom/ptz": 100}, 0.1)
     assert sent == [{"mode": "DRIVEN", "axes": {"pan": 50.0, "tilt": 20.0, "zoom": 100.0}}]
+
+
+def test_her_gate_config_runs_without_a_supervisor_and_nowhere_else():
+    """config/gate.sim-ted-bulk-alfa.json (Ted, 2026-11-25): her CoSwim deployment has no safety supervisor,
+    so this one file turns require_safety_state off. The example config keeps it on."""
+    import pathlib
+
+    from payload_gate.policy import load
+
+    root = pathlib.Path(__file__).resolve().parent.parent / "config"
+    pol = load(root / "sim-ted-bulk-alfa.platform.json", "ptz", "sim-ted-bulk-alfa", root / "gate.sim-ted-bulk-alfa.json")
+    assert (pol.require_safety_state, pol.max_axis_age_ms) == (False, 1000)
+    assert load(root / "platform.example.json", "gimbal", "x", root / "gate.example.json").require_safety_state is True

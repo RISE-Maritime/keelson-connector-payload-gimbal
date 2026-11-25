@@ -67,8 +67,12 @@ Slipway ADR-0159), the platform file is `config/sim-ted-bulk-alfa.platform.json`
 
 ```bash
 .venv/bin/python bin/payload-gimbal2keelson.py -r rise -e sim-ted-bulk-alfa -s payload-ptz --payload-id ptz \
-    --driver slipway --platform config/sim-ted-bulk-alfa.platform.json --gate-config config/gate.example.json --state-dir state/
+    --driver slipway --platform config/sim-ted-bulk-alfa.platform.json --gate-config config/gate.sim-ted-bulk-alfa.json --state-dir state/
 ```
+
+Its gate config, `config/gate.sim-ted-bulk-alfa.json`, turns `require_safety_state` OFF: her CoSwim
+deployment runs no safety supervisor (Ted, 2026-11-25). That exception is for this simulator only; her
+local lockout, the dead-man, the lease and the fence still apply.
 
 Its `payloads[]` entry must match her platform config's exactly. Crowsnest reads the axes and the safe
 state from that one.
