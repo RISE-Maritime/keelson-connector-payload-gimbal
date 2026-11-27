@@ -1,0 +1,9 @@
+{
+  "_comment": "Slipway's sim-ted-mass-bulk60-alfa as named ship mass-bulk60-alfa (Slipway ships/, ADR-0185), copied from sim-ted-bulk-alfa's (Ted, 2026-11-25) for review: her deployment runs no safety supervisor, so nothing publishes safety_state and the gate would never drive. require_safety_state is OFF for this simulator alone; her local lockout (Slipway's own hold), the dead-man, the lease and the fence all still apply. Never use this file for a vessel.",
+  "max_axis_age_ms": 1000,
+  "safety_ttl_ms": 15000,
+  "require_safety_state": false,
+  "motion_fence_ttl_ms": 2000,
+  "ship_ttl_ms": 5000,
+  "ship": {}
+}
